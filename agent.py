@@ -15,7 +15,7 @@ def add_number(a: int, b: int) -> int:
 @tool
 def get_weather(city: str) -> str:
     """Get weather for city (mock)."""
-    return f"weather for {city} : sunny 45 degrees  (mock data)"
+    return f"weather for {city} : sunny 45 degree Celsius "
 
 
 llm = ChatGroq(model="openai/gpt-oss-120b")
