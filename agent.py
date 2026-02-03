@@ -7,12 +7,6 @@ load_dotenv()
 
 
 @tool
-def add_number(a: int, b: int) -> int:
-    """adds to numbers together"""
-    return a + b
-
-
-@tool
 def get_weather(city: str) -> str:
     """Get weather for city (mock)."""
     return f"weather for {city} : sunny 45 degree Celsius "
@@ -20,13 +14,14 @@ def get_weather(city: str) -> str:
 
 llm = ChatGroq(model="openai/gpt-oss-120b")
 
-tools = [add_number, get_weather]
+tools = [get_weather]
 
 agent = agents.create_agent(
     llm,
     tools,
-    system_prompt="""You are helpful assistant with calculator and weather tools.
-     Use tools when asked for addition of numbers or weather. Be concise. """
+    system_prompt="""You answer ONLY weather-related questions.
+If the question is not about weather, say:
+"I can only answer weather-related queries." """
 )
 
 __all__ = ["agent"]

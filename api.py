@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from agent import agent
@@ -8,6 +9,13 @@ from fastapi.middleware.cors import CORSMiddleware
 load_dotenv()
 
 app = FastAPI()
+
+WEATHER_KEYWORDS = [
+    'weather', 'temperature', 'rain', 'snow', 'sunny', 'cloudy',
+    'forecast', 'climate', 'humidity', 'wind', 'storm', 'thunder',
+    'cold', 'hot', 'warm', 'cool', 'precipitation', 'degrees',
+    'celsius', 'fahrenheit', 'overcast', 'drizzle', 'hail'
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +33,17 @@ class ChatInput(BaseModel):
 @app.post("/chat")
 async def chat(request: ChatInput):
     try:
+        is_weather_related = any(keyword in request.message for keyword in WEATHER_KEYWORDS)
+
+        if not is_weather_related:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": "Invalid query",
+                    "reply": "I can only answer weather-related queries"
+                }
+            )
+
         result = agent.invoke(
             {"messages": [{"role": "user", "content": request.message}]}
         )
@@ -35,5 +54,6 @@ async def chat(request: ChatInput):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-if __name__ == "__main__" :
+
+if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
