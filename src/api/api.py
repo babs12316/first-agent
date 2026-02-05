@@ -2,13 +2,16 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from agent import agent
+from src.agent import agent
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from src.api.health import router as health_router
 
 load_dotenv()
 
 app = FastAPI()
+
+app.include_router(health_router)
 
 WEATHER_KEYWORDS = [
     'weather', 'temperature', 'rain', 'snow', 'sunny', 'cloudy',
