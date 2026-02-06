@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from src.agent import agent
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.health import router as health_router
@@ -32,7 +31,7 @@ app.add_middleware(
 class ChatInput(BaseModel):
     message: str
 
-
+from src.agent import agent
 @app.post("/chat")
 async def chat(request: ChatInput):
     try:
