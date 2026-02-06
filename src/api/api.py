@@ -31,19 +31,10 @@ app.add_middleware(
 class ChatInput(BaseModel):
     message: str
 
+
 @app.post("/chat")
 async def chat(request: ChatInput):
     try:
-        is_weather_related = any(keyword in request.message for keyword in WEATHER_KEYWORDS)
-
-        if not is_weather_related:
-            return JSONResponse(
-                status_code=400,
-                content={
-                    "error": "Invalid query",
-                    "reply": "I can only answer weather-related queries"
-                }
-            )
         from src.agent import agent
         result = agent.invoke(
             {"messages": [{"role": "user", "content": request.message}]}
