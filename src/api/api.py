@@ -6,6 +6,7 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.health import router as health_router
 
+
 load_dotenv()
 
 app = FastAPI()

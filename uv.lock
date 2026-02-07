@@ -284,6 +284,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "langchain" },
     { name = "langchain-groq" },
     { name = "langgraph" },
@@ -300,6 +301,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.128.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "langchain", specifier = ">=1.2.7" },
     { name = "langchain-groq", specifier = ">=1.1.1" },
     { name = "langgraph", specifier = ">=1.0.7" },
