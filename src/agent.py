@@ -118,3 +118,14 @@ if __name__ == "__main__":
         "messages": [{"role": "user", "content": "how is weather in Frankfurt?"}]
     })
     print("✅ Weather result:", result)
+
+    for token, metadata in agent.stream(
+            {"messages": [{"role": "user", "content": "What is the weather in SF?"}]},
+            stream_mode="messages",
+    ):
+        print(f"node: {metadata['langgraph_node']}")
+        print(f"content: {token.content_blocks}")
+        for block in token.content_blocks:
+            if block.get("type") == "text":
+                print("text:", block["text"])
+        print("\n")
