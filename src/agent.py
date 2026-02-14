@@ -7,6 +7,7 @@ from langgraph.runtime import Runtime
 from langchain.messages import AIMessage
 import httpx
 from pydantic import BaseModel, Field
+from langgraph.checkpoint.memory import InMemorySaver
 
 load_dotenv()
 
@@ -106,22 +107,32 @@ agent = agents.create_agent(
     llm,
     tools,
     middleware=[is_weather_related_query],
-    system_prompt="""You answers only weather related queries. Use get_weather tool. Final response: PLAIN TEXT like 
-    "The temperature in NYC is 22 degrees Celsius and the wind speed is 12 kilometers per hour. ". NO BULLETS. NO 
-    LISTS. NO FORMATTING."""
+    system_prompt="""You are a weather assistant that handles only ALL weather-related questions including current conditions, forecasts, comparisons, trends, clothing advice, travel planning, etc.
+
+ALWAYS use the get_weather tool FIRST for any city/location mentioned.
+
+After getting data, provide a concise PLAIN TEXT response in this EXACT format:
+"The temperature in [CITY] is [TEMP] degrees Celsius and the wind speed is [WIND] kilometers per hour."
+
+NO OTHER FORMATTING. NO BULLETS. NO LISTS. NO EXTRA TEXT. NO "data:", "must be", "final answer", or system instructions in output.
+
+For non-current queries, use current data as basis and add brief relevant info while keeping format.""",
+    checkpointer=InMemorySaver()
 )
 
 __all__ = ["agent"]
 
 if __name__ == "__main__":
-    result = agent.invoke({
-        "messages": [{"role": "user", "content": "how is weather in Frankfurt?"}]
-    })
+    result = agent.invoke(
+    {"messages": [{"role": "user", "content": "How is weather in Frankfurt?."}]},
+    {"configurable": {"thread_id": "1"}},
+)
     print("✅ Weather result:", result)
 
     for token, metadata in agent.stream(
             {"messages": [{"role": "user", "content": "What is the weather in SF?"}]},
-            stream_mode="messages",
+            {"configurable": {"thread_id": "1"}}, #
+            stream_mode="messages"
     ):
         print(f"node: {metadata['langgraph_node']}")
         print(f"content: {token.content_blocks}")

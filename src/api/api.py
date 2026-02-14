@@ -38,6 +38,7 @@ def stream_response(message: str):
     first_block = True
     for token, metadata in agent.stream(
             {"messages": [{"role": "user", "content": message}]},
+            {"configurable": {"thread_id": "1"}},
             stream_mode="messages",
     ):
 
